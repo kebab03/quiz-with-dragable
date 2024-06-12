@@ -1,0 +1,1 @@
+COmprende drag and drop 
