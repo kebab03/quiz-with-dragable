@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Quiz</title>
+</head>
+<body>
+    <!-- Quiz 1: Select the Correct Answer -->
+    <div class="quiz" id="quiz1">
+        <h2>Quiz 1: Select the Correct Answer</h2>
+        <div id="question1">Question 1: Which is the capital of France?</div>
+        <input type="radio" name="answer1" value="Paris"> Paris<br>
+        <input type="radio" name="answer1" value="Berlin"> Berlin<br>
+        <input type="radio" name="answer1" value="Madrid"> Madrid<br>
+        <input type="radio" name="answer1" value="Rome"> Rome<br>
+        <button onclick="nextQuiz()">Next</button>
+    </div>
+
+    <!-- Quiz 2: Order the Programming Languages -->
+    <div class="quiz" id="quiz2" style="display: none;">
+        <h2>Quiz 2: Order the Programming Languages</h2>
+        <p>Put the following languages in the correct order:</p>
+        <div id="optionsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div class="option" draggable="true" ondragstart="dragStart(event)" id="java">Java</div>
+            <div class="option" draggable="true" ondragstart="dragStart(event)" id="python">Python</div>
+            <div class="option" draggable="true" ondragstart="dragStart(event)" id="ruby">Ruby</div>
+        </div>
+        <button onclick="checkOrder()">Check Order</button>
+        <p id="result2"></p>
+    </div>
+
+    <!-- Quiz 3: Your Next Quiz Type -->
+    <!-- Add more quizzes in a similar structure -->
+
+    <script>
+        function nextQuiz() {
+            const currentQuiz = document.querySelector('.quiz:not([style="display: none;"])');
+            const nextQuiz = currentQuiz.nextElementSibling;
+
+            if (nextQuiz) {
+                currentQuiz.style.display = "none";
+                nextQuiz.style.display = "block";
+            } else {
+                alert("No more quizzes available.");
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            if (event.target.classList.contains("option")) {
+                event.target.classList.add("drop-zone");
+            }
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.target.classList.add("dragging");
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const draggedId = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(draggedId);
+            console.log(" draggedElement :::::@ ",draggedElement);
+            const dropZone = event.target;
+
+            if (dropZone.classList.contains("option")) {
+                const tempText = draggedElement.textContent;
+                draggedElement.textContent = dropZone.textContent;
+                dropZone.textContent = tempText;
+            }
+
+            if (dropZone.classList.contains("option")) {
+                console.log('dropZone.classList.contains("option")',dropZone.classList.contains("option"))
+                dropZone.classList.remove("drop-zone");
+            }
+            draggedElement.classList.remove("dragging");
+        }
+
+        function checkOrder() {
+            const itemsInOrder = ["Java", "Python", "Ruby"];
+            const userOrder = Array.from(optionsContainer.children).map(option => option.textContent);
+            console.log("userOrder-== ",userOrder)
+            const resultElement = document.getElementById("result2");
+
+            if (arraysEqual(itemsInOrder, userOrder)) {
+                resultElement.textContent = "Correct! Well done!";
+                resultElement.classList.add("correct");
+            } else {
+                resultElement.textContent = "Incorrect. Try again.";
+                resultElement.classList.remove("correct");
+            }
+
+            resultElement.style.display = "block";
+        }
+
+        function arraysEqual(arr1, arr2) {
+            if (arr1.length !== arr2.length) return false;
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

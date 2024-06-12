@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Quiz</title>
+    <style>
+        .quiz-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz1" class="quiz-container">
+        <!-- Quiz 1 with radio inputs -->
+        <h2 id="question1">Quiz 1: Select the Correct Answer</h2>
+        <div id="answers1"></div>
+        <button onclick="nextQuiz()">Next</button>
+    </div>
+
+    <div id="quiz2" class="quiz-container">
+        <!-- Quiz 2 for ordering -->
+        <h2 id="question2">Quiz 2: Order the Programming Languages</h2>
+        <div id="optionsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <!-- Options will be dynamically added here -->
+        </div>
+        <button onclick="checkOrder()">Check Order</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const questions = [
+            {    
+                question: "Which is the largest animal in the world?",
+                answers: [
+                    { text: "Shark", correct: false },
+                    { text: "Blue whale", correct: true },
+                    { text: "Elephant", correct: false },
+                    { text: "Giraffe", correct: false },
+                ]
+            },
+            {      
+                question: "Which is the smallest country in the world?",
+                answers: [
+                    { text: "Vatican City", correct: true },
+                    { text: "Bhutan", correct: false },
+                    { text: "Nepal", correct: false },
+                    { text: "Sri Lanka", correct: false },
+                ]
+            },
+            {
+                question: "Which is the largest desert in the world?",    
+                answers: [
+                    { text: "Kalahari", correct: false },
+                    { text: "Gobi", correct: false },
+                    { text: "Sahara", correct: false },
+                    { text: "Antarctica", correct: true },
+                ]
+            },
+            {
+                question: "Which is the smallest continent in the world?",    
+                answers: [
+                    { text: "Asia", correct: false },
+                    { text: "Australia", correct: true },
+                    { text: "Arctic", correct: false },
+                    { text: "Africa", correct: false },
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function nextQuiz() {
+            if (currentQuestion < questions.length) {
+                const currentQuiz = document.getElementById(`quiz${currentQuestion + 1}`);
+                currentQuiz.style.display = "none";
+
+                currentQuestion++;
+
+                if (currentQuestion < questions.length) {
+                    const nextQuiz = document.getElementById(`quiz${currentQuestion + 1}`);
+                    setupQuestion(nextQuiz);
+                    nextQuiz.style.display = "block";
+                }
+            }
+        }
+
+        function setupQuestion(quiz) {
+            const questionData = questions[currentQuestion];
+            const questionElement = document.getElementById(`question${currentQuestion + 1}`);
+            questionElement.textContent = `${questionData.question}`;
+
+            if (currentQuestion === 0) {
+                const answersContainer = document.getElementById(`answers${currentQuestion + 1}`);
+                questionData.answers.forEach(answer => {
+                    const radioInput = document.createElement("input");
+                    radioInput.type = "radio";
+                    radioInput.name = `answer${currentQuestion + 1}`;
+                    radioInput.value = answer.text;
+                    answersContainer.appendChild(radioInput);
+
+                    const label = document.createElement("label");
+                    label.textContent = ` ${answer.text}`;
+                    answersContainer.appendChild(label);
+
+                    answersContainer.appendChild(document.createElement("br"));
+                });
+            } else if (currentQuestion === 1) {
+                const optionsContainer = document.getElementById("optionsContainer");
+                optionsContainer.innerHTML = "";
+
+                questionData.answers.forEach(answer => {
+                    const option = document.createElement("div");
+                    option.classList.add("option");
+                    option.draggable = true;
+                    option.id = answer.text.toLowerCase();
+                    option.textContent = answer.text;
+
+                    option.ondragstart = dragStart;
+
+                    optionsContainer.appendChild(option);
+                });
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            if (event.target.classList.contains("option")) {
+                event.target.classList.add("drop-zone");
+            }
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.target.classList.add("dragging");
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const draggedId = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(draggedId);
+            const dropZone = event.target;
+
+            if (dropZone.classList.contains("option")) {
+                // Swap the elements
+                const tempText = draggedElement.textContent;
+                draggedElement.textContent = dropZone.textContent;
+                dropZone.textContent = tempText;
+            }
+
+            // Reset styles
+            if (dropZone.classList.contains("option")) {
+                dropZone.classList.remove("drop-zone");
+            }
+            draggedElement.classList.remove("dragging");
+        }
+
+        function checkOrder() {
+            const itemsInOrder = ["java", "python", "ruby"];
+            const userOrder = Array.from(optionsContainer.children).map(option => option.id);
+
+            const resultElement = document.getElementById("result");
+
+            if (arraysEqual(itemsInOrder, userOrder)) {
+                resultElement.textContent = "Correct! Well done!";
+                resultElement.classList.add("correct");
+            } else {
+                resultElement.textContent = "Incorrect. Try again.";
+                resultElement.classList.remove("correct");
+            }
+
+            resultElement.style.display = "block";
+        }
+
+        function arraysEqual(arr1, arr2) {
+            if (arr1.length !== arr2.length) return false;
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) return false;
+            }
+            return true;
+        }
+
+        // Initial setup
+        setupQuestion(document.getElementById(`quiz${currentQuestion + 1}`));
+        document.getElementById(`quiz${currentQuestion + 1}`).style.display = "block";
+    </script>
+</body>
+</html>

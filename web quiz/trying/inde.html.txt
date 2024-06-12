@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App - Easy Tutorials</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Aggiungi il tuo stile CSS qui */
+        #optionsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .option.dragging {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .drop-zone {
+            border: 2px dashed #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Simple Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Question goes here</h2>
+            <div id="answer-buttons">
+                <!-- Existing answer buttons for other questions -->
+                <button class="btn">Answer 1</button>
+                <button class="btn">Answer 2</button>
+                <button class="btn">Answer 3</button>
+                <button class="btn">Answer 4</button>
+            </div>
+
+            <!-- Incorporate the drag-and-drop ordering for the third question -->
+            <div id="optionsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="kalahari">Kalahari</div>
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="gobi">Gobi</div>
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="sahara">Sahara</div>
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="antarctica">Antarctica</div>
+            </div>
+
+            <button id="checkOrderBtn">Check Order</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

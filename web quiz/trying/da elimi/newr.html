@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App - Easy Tutorials</title>
+    <style>
+        /* Add your CSS styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #5feed6;
+        }
+
+        .app {
+            background: #f3eed7;
+            width: 90%;
+            max-width: 600px;
+            margin: 100px auto 0;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .app h1 {
+            font-size: 35px;
+            color: #049985;
+            font-weight: 600;
+            border-bottom: 1px solid #a80303;
+            padding-bottom: 3px;
+        }
+
+        .quiz {
+            padding: 20px 0;
+        }
+
+        .quiz h2 {
+            font-size: 18px;
+            color: #001e4d;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #fff;
+            color: #222;
+            font-weight: 500;
+            width: 100%;
+            border: 1px solid #222;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover:not([disabled]) {
+            background: #222;
+            color: #fff;
+        }
+
+        .btn:disabled {
+            cursor: no-drop;
+        }
+
+        #next-btn {
+            background: #001e4d;
+            color: #fff;
+            font-weight: 500;
+            width: 150px;
+            border: 0;
+            padding: 10px;
+            margin: 20px auto 0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .option {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .option.dragging {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .drop-zone {
+            border: 2px dashed #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Simple Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Put the deserts in the correct order by size:</h2>
+            <div id="answer-buttons">
+                <!-- Existing answer buttons for other questions -->
+                <button class="btn">Answer 1</button>
+                <button class="btn">Answer 2</button>
+                <button class="btn">Answer 3</button>
+                <button class="btn">Answer 4</button>
+            </div>
+
+            <!-- Drag-and-drop for ordering deserts -->
+            <div id="optionsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="java">Java</div>
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="python">Python</div>
+                <div class="option" draggable="true" ondragstart="dragStart(event)" id="ruby">Ruby</div>
+            </div>
+
+            <button id="checkOrderBtn">Check Order</button>
+            <p id="result"></p>
+        </div>
+    </div>
+
+    <script>
+        const optionsContainer = document.getElementById("optionsContainer");
+        const checkOrderBtn = document.getElementById("checkOrderBtn");
+
+        function allowDrop(event) {
+            event.preventDefault();
+            if (event.target.classList.contains("option")) {
+                event.target.classList.add("drop-zone");
+            }
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.target.classList.add("dragging");
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const draggedId = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(draggedId);
+            const dropZone = event.target;
+
+            if (dropZone.classList.contains("option")) {
+                // Swap the elements
+                const tempText = draggedElement.textContent;
+                draggedElement.textContent = dropZone.textContent;
+                dropZone.textContent = tempText;
+            }
+
+            // Reset styles
+            if (dropZone.classList.contains("option")) {
+                dropZone.classList.remove("drop-zone");
+            }
+            draggedElement.classList.remove("dragging");
+        }
+
+        function checkOrder() {
+            const itemsInOrder = ["Java", "Python", "Ruby"];
+            const userOrder = Array.from(optionsContainer.children).map(option => option.textContent);
+
+            if (arraysEqual(itemsInOrder, userOrder)) {
+                document.getElementById("result").textContent = "Correct! Well done!";
+                document.getElementById("result").classList.add("correct");
+            } else {
+                document.getElementById("result").textContent = "Incorrect. Try again.";
+                document.getElementById("result").classList.remove("correct");
+            }
+
+            document.getElementById("result").style.display = "block";
+        }
+
+        function arraysEqual(arr1, arr2) {
+            if (arr1.length !== arr2.length) return false;
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) return false;
+            }
+            return true;
+        }
+
+        checkOrderBtn.addEventListener("click", checkOrder);
+    </script>
+</body>
+</html>

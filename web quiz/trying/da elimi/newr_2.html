@@ -1,0 +1,169 @@
+<script>
+    const questions = [
+        {    
+            question: "Which is the largest animal in the world?",
+            type: "radio",
+            answers: [
+                { text: "Shark", correct: false },
+                { text: "Blue whale", correct: true },
+                { text: "Elephant", correct: false },
+                { text: "Giraffe", correct: false },
+            ]
+        },
+        {      
+            question: "Which is the smallest country in the world?",
+            type: "radio",
+            answers: [
+                { text: "Vatican City", correct: true },
+                { text: "Bhutan", correct: false },
+                { text: "Nepal", correct: false },
+                { text: "Sri Lanka", correct: false },
+            ]
+        },
+        {
+            question: "Which is the largest desert in the world?",    
+            type: "radio",
+            answers: [
+                { text: "Kalahari", correct: false },
+                { text: "Gobi", correct: false },
+                { text: "Sahara", correct: false },
+                { text: "Antarctica", correct: true },
+            ]
+        },
+        {
+            question: "Which is the smallest continent in the world?",    
+            type: "radio",
+            answers: [
+                { text: "Asia", correct: false },
+                { text: "Australia", correct: true },
+                { text: "Arctic", correct: false },
+                { text: "Africa", correct: false },
+            ]
+        },
+        {
+            question: "Order the Programming Languages",
+            type: "drag",
+            answers: [
+                { text: "Java", correct: true },
+                { text: "Python", correct: true },
+                { text: "Ruby", correct: true },
+            ]
+        }
+    ];
+
+    let currentQuestion = 0;
+
+    function nextQuiz() {
+        const currentQuiz = document.getElementById(`quiz${currentQuestion + 1}`);
+        currentQuiz.style.display = "none";
+
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            const nextQuiz = document.getElementById(`quiz${currentQuestion + 1}`);
+            setupQuestion(nextQuiz);
+            nextQuiz.style.display = "block";
+        }
+    }
+
+    function setupQuestion(quiz) {
+        const questionData = questions[currentQuestion];
+        const questionElement = document.getElementById(`question${currentQuestion + 1}`);
+        questionElement.textContent = `${questionData.question}`;
+
+        if (questionData.type === "radio") {
+            const answersContainer = document.getElementById(`answers${currentQuestion + 1}`);
+            answersContainer.innerHTML = "";
+
+            questionData.answers.forEach(answer => {
+                const radioInput = document.createElement("input");
+                radioInput.type = "radio";
+                radioInput.name = `answer${currentQuestion + 1}`;
+                radioInput.value = answer.text;
+                answersContainer.appendChild(radioInput);
+
+                const label = document.createElement("label");
+                label.textContent = ` ${answer.text}`;
+                answersContainer.appendChild(label);
+
+                answersContainer.appendChild(document.createElement("br"));
+            });
+        } else if (questionData.type === "drag") {
+            const optionsContainer = document.getElementById("optionsContainer");
+            optionsContainer.innerHTML = "";
+
+            questionData.answers.forEach(answer => {
+                const option = document.createElement("div");
+                option.classList.add("option");
+                option.draggable = true;
+                option.id = answer.text.toLowerCase();
+                option.textContent = answer.text;
+
+                option.ondragstart = dragStart;
+
+                optionsContainer.appendChild(option);
+            });
+        }
+    }
+
+    function allowDrop(event) {
+        event.preventDefault();
+        if (event.target.classList.contains("option")) {
+            event.target.classList.add("drop-zone");
+        }
+    }
+
+    function dragStart(event) {
+        event.dataTransfer.setData("text", event.target.id);
+        event.target.classList.add("dragging");
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const draggedId = event.dataTransfer.getData("text");
+        const draggedElement = document.getElementById(draggedId);
+        const dropZone = event.target;
+
+        if (dropZone.classList.contains("option")) {
+            // Swap the elements
+            const tempText = draggedElement.textContent;
+            draggedElement.textContent = dropZone.textContent;
+            dropZone.textContent = tempText;
+        }
+
+        // Reset styles
+        if (dropZone.classList.contains("option")) {
+            dropZone.classList.remove("drop-zone");
+        }
+        draggedElement.classList.remove("dragging");
+    }
+
+    function checkOrder() {
+        const itemsInOrder = ["java", "python", "ruby"];
+        const userOrder = Array.from(optionsContainer.children).map(option => option.id);
+
+        const resultElement = document.getElementById("result");
+
+        if (arraysEqual(itemsInOrder, userOrder)) {
+            resultElement.textContent = "Correct! Well done!";
+            resultElement.classList.add("correct");
+        } else {
+            resultElement.textContent = "Incorrect. Try again.";
+            resultElement.classList.remove("correct");
+        }
+
+        resultElement.style.display = "block";
+    }
+
+    function arraysEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) return false;
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) return false;
+        }
+        return true;
+    }
+
+    // Initial setup
+    setupQuestion(document.getElementById(`quiz${currentQuestion + 1}`));
+    document.getElementById(`quiz${currentQuestion + 1}`).style.display = "block";
+</script>

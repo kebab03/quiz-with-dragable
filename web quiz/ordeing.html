@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordering Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #optionsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .option.dragging {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .drop-zone {
+            border: 2px dashed #4caf50;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #result.correct {
+            background-color: #4caf50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <h1>Programming Languages Ordering Quiz</h1>
+
+    <div id="optionsContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="option" draggable="true" ondragstart="dragStart(event)" id="ruby">Ruby</div>
+        <div class="option" draggable="true" ondragstart="dragStart(event)" id="python">Python</div>
+        <div class="option" draggable="true" ondragstart="dragStart(event)" id="javascript">JavaScript</div>
+    </div>
+
+    <button onclick="checkOrder()">Check Order</button>
+
+    <p id="result"></p>
+</div>
+
+<script>
+    function allowDrop(event) {
+        event.preventDefault();
+        console.log('event.target.classList.contains("option").... = ' +event.target.classList.contains("option"))
+        if (event.target.classList.contains("option")) {
+            event.target.classList.add("drop-zone");
+            console.log('event.target.classList.add("drop-zone")_____ '+ event.target.classList.add("drop-zone"))
+        }
+    }
+
+    function dragStart(event) {        
+        event.dataTransfer.setData("text", event.target.id);
+        event.target.classList.add("dragging");
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        var draggedId = event.dataTransfer.getData("text");
+        console.log('event.dataTransfer.getData("text") :=' +event.dataTransfer.getData("text"))
+        var draggedElement = document.getElementById(draggedId);
+        var dropZone = event.target;
+
+        if (dropZone.classList.contains("option")) {
+            // Swap the elements
+            var tempText = draggedElement.textContent;
+            draggedElement.textContent = dropZone.textContent;
+            dropZone.textContent = tempText;
+        }
+
+        // Reset styles
+        if (dropZone.classList.contains("option")) {
+            dropZone.classList.remove("drop-zone");
+        }
+        draggedElement.classList.remove("dragging");
+    }
+
+    function checkOrder() {
+        var itemsInOrder = ["JavaScript", "Python", "Ruby"];
+        var userOrder = Array.from(document.querySelectorAll(".option")).map(option => option.textContent);
+
+        if (arraysEqual(itemsInOrder, userOrder)) {
+            document.getElementById("result").textContent = "Correct! Well done!";
+            document.getElementById("result").classList.add("correct");
+        } else {
+            document.getElementById("result").textContent = "Incorrect. Try again.";
+            document.getElementById("result").classList.remove("correct");
+        }
+
+        document.getElementById("result").style.display = "block";
+    }
+
+    function arraysEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) return false;
+        for (var i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) return false;
+        }
+        return true;
+    }
+</script>
+
+</body>
+</html>
